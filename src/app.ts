@@ -8,7 +8,7 @@ import path from 'path';
 const app = express();
 const PORT = 3450;
 export const saltRounds = 10;
-const allowedOrigin = ['http://localhost:5173'];
+const allowedOrigin = ['https://bodymaster-frontend.vercel.app/'];
 const options: cors.CorsOptions = {
   origin: allowedOrigin,
   allowedHeaders: ['*'],
