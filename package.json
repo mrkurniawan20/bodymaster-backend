@@ -1,0 +1,40 @@
+{
+  "name": "gym-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respawn src/app.ts"
+  },
+  "prisma": {
+    "seed": "ts-node src/prisma/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.7.0",
+    "@types/date-fns": "^2.5.3",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.15.17",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.2",
+    "node-cron": "^4.0.5",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "faker": "^5.5.3",
+    "ts-node-dev": "^2.0.0"
+  }
+}

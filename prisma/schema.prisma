@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id          Int      @id @default(autoincrement())
+  name        String
+  password    String
+  phone       String
+  image       String?
+  category    Category 
+  joinDate    DateTime @default(now())
+  expireDate  DateTime
+  status      Status   @default(ACTIVE)
+  role        Role      @default(MEMBER)
+  updatedAt   DateTime @updatedAt
+  visit Visit[]
+  payment Payment[]
+  @@index ([id, expireDate])
+}
+
+enum Category {
+  REGULAR
+  WANITA
+  PELAJAR
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+model Visit{
+  id          Int      @id @default(autoincrement())
+  memberId Int
+  member Member @relation(fields: [memberId], references: [id])
+  visitedAt DateTime @default(now())
+
+  @@index ([memberId, visitedAt])
+}
+
+model Payment{
+  id    Int @id @default(autoincrement())
+  amount Int
+  name String 
+  memberId Int
+  member Member @relation(fields: [memberId], references: [id])
+  paymentAt DateTime @default(now())
+  method Method 
+}
+
+enum Method {
+  QR
+  CASH 
+}
+
+model Notifications{
+  id Int @id @default(autoincrement())
+  content String
+  createdAt DateTime @default(now())
+  readStatus Read @default(UNREAD)
+}
+
+enum Read {
+  READ
+  UNREAD
+}
