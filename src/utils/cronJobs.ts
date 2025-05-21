@@ -6,7 +6,7 @@ export function CronJob() {
   cron.schedule('0 0 * * *', async () => {
     const now = new Date();
     try {
-      prisma.$transaction(async (tx : Prisma.TransactionClient) => {
+      prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         const memberExpired = await tx.member.updateMany({
           where: { expireDate: { lte: now }, status: { not: 'INACTIVE' } },
           data: { status: 'INACTIVE' },
@@ -24,5 +24,4 @@ export function CronJob() {
       console.log(error.message);
     }
   });
-  console.log(`CronJob initialized completely`);
 }

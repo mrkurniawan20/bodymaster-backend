@@ -22,6 +22,8 @@ CronJob();
 app.use('/member', routerUser);
 // app.use('/post', routerPost);
 
-app.listen(PORT, () => {
-  console.log(`Server is running at port`, PORT);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server is running at port`, PORT);
+// });
+
+export default app;
