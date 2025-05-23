@@ -20,6 +20,7 @@ model Member {
   password    String
   phone       String
   image       String?
+  imageId     String?
   category    Category 
   joinDate    DateTime @default(now())
   expireDate  DateTime
@@ -64,6 +65,7 @@ model Payment{
   member Member @relation(fields: [memberId], references: [id])
   paymentAt DateTime @default(now())
   method Method 
+  @@index([memberId,paymentAt])
 }
 
 enum Method {
@@ -76,6 +78,7 @@ model Notifications{
   content String
   createdAt DateTime @default(now())
   readStatus Read @default(UNREAD)
+  @@index([createdAt,id])
 }
 
 enum Read {
