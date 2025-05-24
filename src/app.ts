@@ -8,7 +8,7 @@ import path from 'path';
 const app = express();
 const PORT = 3450;
 export const saltRounds = 10;
-const allowedOrigin = ['https://bodymaster-frontend.vercel.app'];
+const allowedOrigin = ['https://bodymaster-frontend.vercel.app', 'http://127.0.0.1:5173/'];
 const options: cors.CorsOptions = {
   origin: allowedOrigin,
   allowedHeaders: ['*'],
@@ -22,8 +22,8 @@ CronJob();
 app.use('/member', routerUser);
 // app.use('/post', routerPost);
 
-// app.listen(PORT, () => {
-//   console.log(`Server is running at port`, PORT);
-// });
+app.listen(PORT, () => {
+  console.log(`Server is running at port`, PORT);
+});
 
 export default app;
