@@ -3,7 +3,6 @@ import { prisma } from '../prisma/client';
 import { saltRounds } from '../app';
 import { addMonths } from 'date-fns';
 import bcrypt from 'bcrypt';
-import { signToken } from '../utils/jwt';
 import { login } from '../services/userService';
 
 export async function addMember(req: Request, res: Response) {
@@ -12,30 +11,19 @@ export async function addMember(req: Request, res: Response) {
     let pics = '';
     let amount = 0;
     if (category === 'REGULAR') {
-      pics = '/uploads/profile-picture/man.png';
+      pics = 'https://res.cloudinary.com/dkadm58qz/image/upload/v1747918047/bodymaster/1747918047510.png';
       amount = 210000;
     } else if (category === 'WANITA') {
-      pics = '/uploads/profile-picture/woman.png';
+      pics = 'https://res.cloudinary.com/dkadm58qz/image/upload/v1748104774/woman_v4qfer.png';
       amount = 190000;
     } else {
-      pics = '/uploads/profile-picture/child.jpg';
+      pics = 'https://res.cloudinary.com/dkadm58qz/image/upload/v1748104773/child_nbek44.jpg';
       amount = 185000;
     }
     const numberId = Number(id);
     const hashed = await bcrypt.hash(password, saltRounds);
     const joinDate = new Date();
     const expireDate = addMonths(joinDate, 1);
-    // const add = await prisma.member.create({
-    //   data: {
-    //     name,
-    //     image: pics,
-    //     id: numberId,
-    //     password: hashed,
-    //     phone,
-    //     expireDate,
-    //     category,
-    //   },
-    // });
     const addWithPayment = await prisma.$transaction([
       prisma.member.create({
         data: {
@@ -57,7 +45,7 @@ export async function addMember(req: Request, res: Response) {
         },
       }),
     ]);
-    res.status(201).json({ addWithPayment });
+    res.status(201).json(addWithPayment);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -68,20 +56,6 @@ export async function loginMember(req: Request, res: Response) {
     const { id, password } = req.body;
     const loggedInMember = await login(id, password);
     res.status(200).json({ message: 'Login successfully', loggedInMember });
-    // const user = await prisma.member.findUnique({
-    //   where: { id: memberId },
-    // });
-    // if (!user) {
-    //   res.status(404).json({ message: 'Member tidak ada' });
-    //   return;
-    // }
-    // const isValid = await bcrypt.compare(password, user?.password);
-    // if (!isValid) {
-    //   res.status(400).json({ message: 'Password salah' });
-    //   return;
-    // }
-    // const token = signToken({id : user.id, expireDate: user.expireDate})
-    // res.status(200).json({ message: 'Login successfully', user });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -171,12 +145,6 @@ export async function extendMember(req: Request, res: Response) {
       return;
     }
     const monthExtend = addMonths(user?.expireDate, 1);
-    // const extend = await prisma.member.update({
-    //   where: { id: user.id },
-    //   data: {
-    //     expireDate: monthExtend,
-    //   },
-    // });
     let amount = 0;
     if (user.category == 'PELAJAR') {
       amount = 185000;
