@@ -89,7 +89,21 @@ export async function loginMember(req: Request, res: Response) {
 
 export async function getAllMember(req: Request, res: Response) {
   try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
     const members = await prisma.member.findMany({
+      include: {
+        visit: {
+          where: {
+            visitedAt: {
+              gte: todayStart,
+              lte: todayEnd,
+            },
+          },
+        },
+      },
       omit: {
         joinDate: true,
         updatedAt: true,
