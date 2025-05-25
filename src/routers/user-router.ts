@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addMember, deleteMember, editMember, extendMember, getAllMember, getAllNotifications, getAllPayment, getLogVisit, getMember, getTodayVisit, loginMember, recordVisit } from '../controllers/user-controller';
+import { addMember, deleteMember, editMember, extendMember, getAllMember, getAllNotifications, getAllPayment, getCountMemberActive, getLogVisit, getMember, getTodayVisit, loginMember, recordVisit } from '../controllers/user-controller';
 // import { uploads } from '../middlewares/multer-middleware';
 
 import { authUser } from '../middlewares/auth-middleware';
@@ -15,6 +15,7 @@ routerUser.get('/getAllMember', authUser, getAllMember);
 routerUser.patch('/editMember/:id', authUser, upload.single('image'), editMember);
 routerUser.post('/visit/:id', recordVisit);
 routerUser.get('/getTodayVisit', authUser, getTodayVisit);
+routerUser.get('/getActiveCount', getCountMemberActive);
 routerUser.get('/getVisitLog', authUser, getLogVisit);
 routerUser.get('/getpayment', authUser, getAllPayment);
 routerUser.post('/extendMember', uploadProfilePicture.none(), extendMember);
