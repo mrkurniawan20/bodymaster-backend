@@ -9,7 +9,7 @@ const categories = ['WANITA', 'REGULAR', 'PELAJAR']; // adjust based on your act
 async function seedMembers() {
   const now = new Date();
   const expireDate = addMonths(now, 1);
-  for (let i = 12; i < 1000; i++) {
+  for (let i = 1; i < 50; i++) {
     // const joinDate = faker.date.past(1); // within last year
 
     // expireDate.setMonth(expireDate.getMonth() + faker.datatype.number({ min: 1, max: 12 }));

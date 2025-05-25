@@ -63,30 +63,31 @@ export async function loginMember(req: Request, res: Response) {
 
 export async function getAllMember(req: Request, res: Response) {
   try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
-    const members = await prisma.member.findMany({
-      include: {
-        visit: {
-          where: {
-            visitedAt: {
-              gte: todayStart,
-              lte: todayEnd,
-            },
-          },
+    const { page = 1, limit = 10, status = 'all', name } = req.query;
+    const offset = (Number(page) - 1) * Number(limit);
+    const filters: any = {};
+    if (status == 'active') filters.status = 'ACTIVE';
+    if (status == 'inactive') filters.status = 'INACTIVE';
+    if (name) filters.name = { contains: name as string, mode: 'insensitive' };
+    const [members, countMembers] = await Promise.all([
+      prisma.member.findMany({
+        where: filters,
+        omit: {
+          joinDate: true,
+          updatedAt: true,
+          password: true,
+          role: true,
         },
-      },
-      omit: {
-        joinDate: true,
-        updatedAt: true,
-        password: true,
-        role: true,
-      },
-      orderBy: { expireDate: 'desc' },
-    });
-    res.status(200).json(members);
+        take: Number(limit),
+        skip: Number(offset),
+        orderBy: { expireDate: 'desc' },
+      }),
+      prisma.member.count({
+        where: filters,
+      }),
+    ]);
+    const totalPage = Math.ceil(countMembers / Number(limit));
+    res.status(200).json({ members, totalPage });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
