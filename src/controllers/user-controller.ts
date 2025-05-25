@@ -91,6 +91,36 @@ export async function getAllMember(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+// export async function getAllMember(req: Request, res: Response) {
+//   try {
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayEnd = new Date();
+//     todayEnd.setHours(23, 59, 59, 999);
+//     const members = await prisma.member.findMany({
+//       include: {
+//         visit: {
+//           where: {
+//             visitedAt: {
+//               gte: todayStart,
+//               lte: todayEnd,
+//             },
+//           },
+//         },
+//       },
+//       omit: {
+//         joinDate: true,
+//         updatedAt: true,
+//         password: true,
+//         role: true,
+//       },
+//       orderBy: { expireDate: 'desc' },
+//     });
+//     res.status(200).json(members);
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 export async function getMember(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
@@ -103,6 +133,31 @@ export async function getMember(req: Request, res: Response) {
       },
     });
     res.status(200).json(member);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getCountMemberActive(req: Request, res: Response) {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+  try {
+    const activeMember = await prisma.member.count({
+      where: {
+        status: 'ACTIVE',
+      },
+    });
+    const todayVisitMember = await prisma.visit.count({
+      where: {
+        visitedAt: {
+          lte: todayEnd,
+          gte: todayStart,
+        },
+      },
+    });
+    res.status(200).json({ activeMember, todayVisitMember });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
