@@ -1,5 +1,20 @@
 import { Router } from 'express';
-import { addMember, deleteMember, editMember, extendMember, getAllMember, getAllNotifications, getAllPayment, getCountMemberActive, getLogVisit, getMember, getTodayVisit, loginMember, recordVisit } from '../controllers/user-controller';
+import {
+  addMember,
+  deleteMember,
+  editMember,
+  extendMember,
+  getAllMember,
+  getAllNotifications,
+  getAllPayment,
+  getCountMemberActive,
+  getExpiredMember,
+  getLogVisit,
+  getMember,
+  getTodayVisit,
+  loginMember,
+  recordVisit,
+} from '../controllers/user-controller';
 // import { uploads } from '../middlewares/multer-middleware';
 
 import { authUser } from '../middlewares/auth-middleware';
@@ -20,4 +35,5 @@ routerUser.get('/getVisitLog', authUser, getLogVisit);
 routerUser.get('/getpayment', authUser, getAllPayment);
 routerUser.post('/extendMember', authUser, uploadProfilePicture.none(), extendMember);
 routerUser.get('/getnotif', getAllNotifications);
-routerUser.delete('/deleteMember', deleteMember);
+routerUser.delete('/deleteMember', authUser, deleteMember);
+routerUser.get('/getExpiredMember', authUser, getExpiredMember);
