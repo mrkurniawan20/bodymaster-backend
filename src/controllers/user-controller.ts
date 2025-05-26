@@ -308,8 +308,8 @@ export async function getExpiredMember(req: Request, res: Response) {
     const expired = await prisma.member.findMany({
       where: {
         expireDate: {
-          lte: addHours(now, 7),
-          gte: addHours(yesterday, 7),
+          lte: addHours(now, -41),
+          gte: addHours(yesterday, -41),
         },
       },
     });
