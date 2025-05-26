@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../prisma/client';
 import { saltRounds } from '../app';
-import { addMonths } from 'date-fns';
+import { addDays, addHours, addMonths } from 'date-fns';
 import bcrypt from 'bcrypt';
 import { login } from '../services/userService';
 
@@ -92,36 +92,7 @@ export async function getAllMember(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
-// export async function getAllMember(req: Request, res: Response) {
-//   try {
-//     const todayStart = new Date();
-//     todayStart.setHours(0, 0, 0, 0);
-//     const todayEnd = new Date();
-//     todayEnd.setHours(23, 59, 59, 999);
-//     const members = await prisma.member.findMany({
-//       include: {
-//         visit: {
-//           where: {
-//             visitedAt: {
-//               gte: todayStart,
-//               lte: todayEnd,
-//             },
-//           },
-//         },
-//       },
-//       omit: {
-//         joinDate: true,
-//         updatedAt: true,
-//         password: true,
-//         role: true,
-//       },
-//       orderBy: { expireDate: 'desc' },
-//     });
-//     res.status(200).json(members);
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// }
+
 export async function getMember(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
@@ -325,6 +296,24 @@ export async function deleteMember(req: Request, res: Response) {
       where: { id: { gte: 12 } },
     });
     res.status(200).json(deletionize);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getExpiredMember(req: Request, res: Response) {
+  const now = new Date().setHours(23, 59, 59, 999);
+  const yesterday = addDays(now, -1);
+  try {
+    const expired = await prisma.member.findMany({
+      where: {
+        expireDate: {
+          lte: addHours(now, -17),
+          gte: addHours(yesterday, -17),
+        },
+      },
+    });
+    res.status(200).json(expired);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
