@@ -318,3 +318,47 @@ export async function getExpiredMember(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getVisitLog(req: Request, res: Response) {
+  const { page = 1, limit = 10 } = req.query;
+  let { selectedDate } = req.body;
+  const offset = (Number(page) - 1) * Number(limit);
+  const startDate = new Date(selectedDate).setHours(0, 0, 0, 0);
+  const endDate = new Date(selectedDate).setHours(23, 59, 59, 999);
+  try {
+    const [members, countMembers] = await Promise.all([
+      prisma.visit.findMany({
+        where: {
+          visitedAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+        orderBy: {
+          visitedAt: 'desc',
+        },
+        take: Number(limit),
+        skip: Number(offset),
+        include: {
+          member: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+      prisma.visit.count({
+        where: {
+          visitedAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+      }),
+    ]);
+    const totalPages = Math.ceil(countMembers / Number(limit));
+    res.status(200).json({ members, totalPages });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

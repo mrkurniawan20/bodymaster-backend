@@ -1,50 +1,42 @@
 // import { PrismaClient } from '@prisma/client';
-// import { subDays, addDays } from 'date-fns';
 
 // const prisma = new PrismaClient();
 
 // async function main() {
-//   await prisma.member.deleteMany(); // Clean slate
+//   const today = new Date('2025-05-27T00:00:00.000Z'); // Set to the beginning of May 27, 2025 (UTC)
 
-//   await prisma.member.createMany({
-//     data: [
-//       {
-//         name: 'John Doe',
-//         phone: '081234567890',
-//         joinDate: subDays(new Date(), 30),
-//         expireDate: subDays(new Date(), 1), // expired yesterday
-//         status: 'INACTIVE',
-//       },
-//       {
-//         name: 'Jane Smith',
-//         phone: '082345678901',
-//         joinDate: subDays(new Date(), 10),
-//         expireDate: new Date(), // expires today
-//         status: 'ACTIVE',
-//       },
-//       {
-//         name: 'Rafli Kurniawan',
-//         phone: '083456789012',
-//         joinDate: subDays(new Date(), 5),
-//         expireDate: addDays(new Date(), 7), // expires next week
-//         status: 'ACTIVE',
-//       },
-//       {
-//         name: 'Ali Akbar',
-//         phone: '084567890123',
-//         joinDate: subDays(new Date(), 60),
-//         expireDate: subDays(new Date(), 2), // expired 2 days ago
-//         status: 'INACTIVE',
-//       },
-//     ],
+//   // Fetch some existing member IDs to link visits to
+//   // Adjust the number of members you fetch based on how many unique members you want to simulate visits for
+//   const members = await prisma.member.findMany({
+//     select: { id: true },
+//     take: 10, // Example: get 10 members to distribute visits among them
 //   });
 
-//   console.log('✅ Seed data inserted!');
+//   if (members.length === 0) {
+//     console.warn('No members found. Please ensure you have members in your database before seeding visits.');
+//     return;
+//   }
+
+//   const visitsData = [];
+//   for (let i = 0; i < 40; i++) {
+//     const randomMember = members[Math.floor(Math.random() * members.length)];
+//     visitsData.push({
+//       memberId: randomMember.id,
+//       visitedAt: today,
+//     });
+//   }
+
+//   console.log('Seeding 40 visits for May 27, 2025...');
+//   await prisma.visit.createMany({
+//     data: visitsData,
+//     skipDuplicates: true, // Optional: skip if a duplicate (memberId, visitedAt) already exists
+//   });
+//   console.log('40 visits seeded successfully.');
 // }
 
 // main()
 //   .catch((e) => {
-//     console.error('❌ Seed error:', e);
+//     console.error(e);
 //     process.exit(1);
 //   })
 //   .finally(async () => {
