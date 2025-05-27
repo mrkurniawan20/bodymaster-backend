@@ -12,6 +12,7 @@ import {
   getLogVisit,
   getMember,
   getTodayVisit,
+  getVisitLog,
   loginMember,
   recordVisit,
 } from '../controllers/user-controller';
@@ -37,3 +38,4 @@ routerUser.post('/extendMember', authUser, uploadProfilePicture.none(), extendMe
 routerUser.get('/getnotif', getAllNotifications);
 routerUser.delete('/deleteMember', authUser, deleteMember);
 routerUser.get('/getExpiredMember', authUser, getExpiredMember);
+routerUser.post('/visitlog', authUser, getVisitLog);
