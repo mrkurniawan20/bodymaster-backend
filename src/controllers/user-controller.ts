@@ -270,16 +270,16 @@ export async function getTodayVisit(req: Request, res: Response) {
   }
 }
 
-export async function getAllPayment(req: Request, res: Response) {
-  try {
-    const payment = await prisma.payment.findMany({
-      include: { member: true },
-    });
-    res.status(200).json(payment);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+// export async function getAllPayment(req: Request, res: Response) {
+//   try {
+//     const payment = await prisma.payment.findMany({
+//       include: { member: true },
+//     });
+//     res.status(200).json(payment);
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
 export async function getAllNotifications(req: Request, res: Response) {
   try {
@@ -358,6 +358,75 @@ export async function getVisitLog(req: Request, res: Response) {
     ]);
     const totalPages = Math.ceil(countMembers / Number(limit));
     res.status(200).json({ members, totalPages });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllPayment(req: Request, res: Response) {
+  const { page = 1, limit = 10 } = req.query;
+  const { selectedDate } = req.body;
+  const offset = (Number(page) - 1) * Number(limit);
+  const startDate = new Date(selectedDate).setHours(0, 0, 0, 0);
+  const endDate = new Date(selectedDate).setHours(23, 59, 59, 999);
+  const startMonth = new Date(selectedDate);
+  startMonth.setDate(1);
+  startMonth.setHours(0, 0, 0, 0);
+  const endMonth = new Date(selectedDate);
+  endMonth.setMonth(endMonth.getMonth() + 1);
+  endMonth.setDate(0);
+  endMonth.setHours(23, 59, 59, 999);
+  try {
+    const [members, countMembes, dailySum, monthlySum] = await Promise.all([
+      prisma.payment.findMany({
+        where: {
+          paymentAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+        orderBy: {
+          paymentAt: 'desc',
+        },
+        take: Number(limit),
+        skip: Number(offset),
+        include: {
+          member: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+      prisma.payment.count({
+        where: {
+          paymentAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+      }),
+      prisma.payment.aggregate({
+        where: {
+          paymentAt: {
+            gte: new Date(startDate),
+            lte: new Date(endDate),
+          },
+        },
+        _sum: { amount: true },
+      }),
+      prisma.payment.aggregate({
+        where: {
+          paymentAt: {
+            gte: new Date(startMonth),
+            lte: new Date(endMonth),
+          },
+        },
+        _sum: { amount: true },
+      }),
+    ]);
+    const totalPages = Math.ceil(countMembes / Number(limit));
+    res.status(200).json({ members, totalPages, dailySum, monthlySum });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
