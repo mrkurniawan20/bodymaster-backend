@@ -4,6 +4,7 @@ import { saltRounds } from '../app';
 import { addDays, addHours, addMonths } from 'date-fns';
 import bcrypt from 'bcrypt';
 import { login } from '../services/userService';
+import { Prisma } from '@prisma/client';
 
 export async function addMember(req: Request, res: Response) {
   try {
@@ -429,5 +430,28 @@ export async function getAllPayment(req: Request, res: Response) {
     res.status(200).json({ members, totalPages, dailySum, monthlySum });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+  }
+}
+
+export async function CronJob(req: Request, res: Response) {
+  const now = new Date();
+  try {
+    prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const memberExpired = await tx.member.updateMany({
+        where: { expireDate: { lte: now }, status: { not: 'INACTIVE' } },
+        data: { status: 'INACTIVE' },
+      });
+      if (memberExpired.count > 0) {
+        const addNotif = await tx.notifications.create({
+          data: {
+            content: `${memberExpired.count} members expired, click to see all expired member`,
+          },
+        });
+      }
+    });
+    res.status(200).json({ message: `CronJob run successfully` });
+  } catch (error: any) {
+    console.log(error.message);
+    res.status(400).json({ message: `CronJob failed` });
   }
 }

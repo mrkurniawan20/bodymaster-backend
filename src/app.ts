@@ -1,5 +1,5 @@
 import express from 'express';
-import { routerUser } from './routers/user-router';
+import { routerDaily, routerUser } from './routers/user-router';
 // import { routerPost } from './router/post-router';
 import cors from 'cors';
 import { CronJob } from './utils/cronJobs';
@@ -20,6 +20,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 CronJob();
 
 app.use('/member', routerUser);
+app.use('/daily', routerDaily);
 // app.use('/post', routerPost);
 
 app.listen(PORT, () => {

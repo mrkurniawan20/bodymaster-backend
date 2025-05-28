@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   addMember,
+  CronJob,
   deleteMember,
   editMember,
   extendMember,
@@ -22,6 +23,7 @@ import { uploadProfilePicture, uploads } from '../middlewares/multer-middleware'
 import { upload } from '../utils/multer-cloudinary';
 
 export const routerUser = Router();
+export const routerDaily = Router();
 
 routerUser.post('/addmember', authUser, upload.none(), addMember);
 routerUser.post('/loginMember', upload.none(), loginMember);
@@ -38,3 +40,4 @@ routerUser.get('/getnotif', getAllNotifications);
 routerUser.delete('/deleteMember', authUser, deleteMember);
 routerUser.get('/getExpiredMember', authUser, getExpiredMember);
 routerUser.post('/visitlog', authUser, getVisitLog);
+routerDaily.get('/triggerCron', CronJob);
