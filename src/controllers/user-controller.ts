@@ -438,7 +438,7 @@ export async function CronJob(req: Request, res: Response) {
   try {
     prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const memberExpired = await tx.member.updateMany({
-        where: { expireDate: { lte: now }, status: { not: 'INACTIVE' } },
+        where: { expireDate: { lte: now }, status: { equals: 'ACTIVE' } },
         data: { status: 'INACTIVE' },
       });
       if (memberExpired.count > 0) {
