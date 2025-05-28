@@ -436,7 +436,7 @@ export async function getAllPayment(req: Request, res: Response) {
 export async function CronJob(req: Request, res: Response) {
   const now = new Date();
   try {
-    prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const memberExpired = await tx.member.updateMany({
         where: { expireDate: { lte: now }, status: { equals: 'ACTIVE' } },
         data: { status: 'INACTIVE' },
