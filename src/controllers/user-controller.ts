@@ -4,7 +4,6 @@ import { saltRounds } from '../app';
 import { addDays, addHours, addMonths } from 'date-fns';
 import bcrypt from 'bcrypt';
 import { login } from '../services/userService';
-import { Prisma } from '@prisma/client';
 
 export async function addMember(req: Request, res: Response) {
   try {
@@ -271,20 +270,14 @@ export async function getTodayVisit(req: Request, res: Response) {
   }
 }
 
-// export async function getAllPayment(req: Request, res: Response) {
-//   try {
-//     const payment = await prisma.payment.findMany({
-//       include: { member: true },
-//     });
-//     res.status(200).json(payment);
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// }
-
 export async function getAllNotifications(req: Request, res: Response) {
   try {
-    const notif = await prisma.notifications.findMany({});
+    const notif = await prisma.notifications.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 7,
+    });
     res.status(200).json(notif);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -430,28 +423,5 @@ export async function getAllPayment(req: Request, res: Response) {
     res.status(200).json({ members, totalPages, dailySum, monthlySum });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
-  }
-}
-
-export async function CronJob(req: Request, res: Response) {
-  const now = new Date();
-  try {
-    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      const memberExpired = await tx.member.updateMany({
-        where: { expireDate: { lte: now }, status: { equals: 'ACTIVE' } },
-        data: { status: 'INACTIVE' },
-      });
-      if (memberExpired.count > 0) {
-        const addNotif = await tx.notifications.create({
-          data: {
-            content: `${memberExpired.count} members expired, click to see all expired member`,
-          },
-        });
-      }
-    });
-    res.status(200).json({ message: `CronJob run successfully` });
-  } catch (error: any) {
-    console.log(error.message);
-    res.status(400).json({ message: `CronJob failed` });
   }
 }

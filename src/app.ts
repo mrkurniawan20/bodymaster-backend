@@ -1,13 +1,10 @@
 import express from 'express';
 import { routerDaily, routerUser } from './routers/user-router';
-// import { routerPost } from './router/post-router';
 import cors from 'cors';
-import { CronJob } from './utils/cronJobs';
-import path from 'path';
 
+export const saltRounds = 10;
 const app = express();
 const PORT = 3450;
-export const saltRounds = 10;
 const allowedOrigin = ['https://bodymaster-frontend.vercel.app', 'http://localhost:5173'];
 const options: cors.CorsOptions = {
   origin: allowedOrigin,
@@ -15,13 +12,9 @@ const options: cors.CorsOptions = {
 };
 app.use(express.json());
 app.use(cors(options));
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
-CronJob();
 
 app.use('/member', routerUser);
 app.use('/daily', routerDaily);
-// app.use('/post', routerPost);
 
 app.listen(PORT, () => {
   console.log(`Server is running at port`, PORT);
