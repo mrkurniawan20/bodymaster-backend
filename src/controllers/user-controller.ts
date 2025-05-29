@@ -317,8 +317,8 @@ export async function getVisitLog(req: Request, res: Response) {
   const { page = 1, limit = 10 } = req.query;
   let { selectedDate } = req.body;
   const offset = (Number(page) - 1) * Number(limit);
-  const startDate = new Date(selectedDate).setHours(0, 0, 0, 0);
-  const endDate = new Date(selectedDate).setHours(23, 59, 59, 999);
+  const startDate = new Date(selectedDate).setHours(0 - 7, 0, 0, 0);
+  const endDate = new Date(selectedDate).setHours(23 - 7, 59, 59, 999);
   try {
     const [members, countMembers] = await Promise.all([
       prisma.visit.findMany({
@@ -361,8 +361,8 @@ export async function getAllPayment(req: Request, res: Response) {
   const { page = 1, limit = 10 } = req.query;
   const { selectedDate } = req.body;
   const offset = (Number(page) - 1) * Number(limit);
-  const startDate = new Date(selectedDate).setHours(0, 0, 0, 0);
-  const endDate = new Date(selectedDate).setHours(23, 59, 59, 999);
+  const startDate = new Date(selectedDate).setHours(0 - 7, 0, 0, 0);
+  const endDate = new Date(selectedDate).setHours(23 - 7, 59, 59, 999);
   const startMonth = new Date(selectedDate);
   startMonth.setDate(1);
   startMonth.setHours(0, 0, 0, 0);
